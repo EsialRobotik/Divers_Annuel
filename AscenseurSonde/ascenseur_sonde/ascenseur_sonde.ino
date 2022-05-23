@@ -119,12 +119,12 @@ void commanderAscenseur(double commande) {
 }
 
 /**
- * Calibre l'ascenseur : cale la nacelle tout en bas
+ * Calibre l'ascenseur : cale la nacelle tout en haut
  * Renvoie "ok" en cas de succès ou "err" + la raison en cas d'erreur
  */
 void handleAscenseurZero() {
   pidEnabled = false;
-  commanderAscenseur((double) -PID_MAX_MOTOR_POWER_ZERO);
+  commanderAscenseur((double) PID_MAX_MOTOR_POWER_ZERO);
   unsigned long timeout = millis() + ODO_ZERO_TIMEOUT_MS;
   unsigned int prevTicks = 0;
   while (true) {
@@ -155,7 +155,7 @@ void handleAscenseurZero() {
     }
   }
   commanderAscenseur(0.);
-  odoTicks = ODO_TICKS_OFFSET;
+  odoTicks = ODO_TICKS_OFFSET + ODO_TICKS_PAR_MILLIMETRE * ODO_HAUTEUR_MAX_MILLIMETRES;
   odoHomeSet = true;
   Serial.println("ok");
 }
