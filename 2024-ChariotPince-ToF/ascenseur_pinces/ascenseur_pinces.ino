@@ -1,19 +1,24 @@
 /*
- * EsialRobotik CDR 2023 esialrobotik.fr
- * Sketch Arduino dédié au pilotage de l'ascenseur de la pince à gâteaux
+ * EsialRobotik CDR 2024 esialrobotik.fr
+ * Sketch Arduino dédié au pilotage de la pince sur courroie et des ToF
  * 
  * Utilise la biblothèque ArduPID 0.1.4 https://github.com/PowerBroker2/ArduPID pour contrôler le moteur de l'ascenseur
  * 
  * Ecrit en franglais avec amour <3
- * Reprise du projet de l'an dernier (ascenseur_sonde) en enlevant la partie sonde + quelques améliorations 
+ * Reprise du projet de l'an dernier, en adaptant pour l'utilisation par décalage gauche-droite et intégration des ToF
+ * afin de déterminer où positionner la pince
  */
 #include "ArduPID.h"
+#include <Wire.h>
+#include <VL53L1X.h>
 
-// Entrées/sorties
+// Entrées/sorties Ascenseur
 #define PIN_ODO_CODEUR_A 2
 #define PIN_ODO_CODEUR_B 3
 #define PIN_PID_MONTER 5
 #define PIN_PID_DESCENDRE 6
+// Entrées/sorties ToF
+// A4(SDA), A5(SCL) for i2c
 
 // Constantes de l'odométrie
 #define ODO_TICKS_PAR_MILLIMETRE 30         // Nombre de ticks de codeur par millimètre parcourus
@@ -41,6 +46,14 @@
 #define USER_CMD_ASCENSEUR_READ_MAX_POSITION 'A' // altitude max  renvoie la hauteur max de l'ascenseur. Renvoie -1 si pas sondée.
 #define USER_CMD_ASCENSEUR_EMERGENCY_STOP 'h'    // halt          arrêt d'urgence de l'ascenseur : désactive la puissance dans le moteurs jusqu'au prochain 'z' ou 'g'
 
+// Constantes des ToF
+// Note: Cette adresse doit être différente de 0x29 qui est la valeur de démarrage
+// d'un ToF (et les adresses utilisables par les ToF)
+#define MULTIPLEXER_I2C_ADDRESS 0x20
+#define TOF_COUNT 8
+#define TOF_I2C_START_ADDRESS 0x2A
+#define TOF_GET_I2C_ADDRESS(i) (TOF_I2C_START_ADDRESS + i)
+
 // Variables de l'odométrie
 unsigned int odoTicks = ODO_TICKS_OFFSET;       // Altimètre de l'ascenseur en unité odométrique
 int hauteurMaxMm = -1;                          // Hauteur max en millimètres
@@ -61,6 +74,9 @@ double pidI = PID_I;
 double pidD = PID_D;
 bool pidEnabled = false;
 bool pidTargetReached = false;
+
+// Variables des ToF
+VL53L1X tof_sensors[TOF_COUNT];
 
 /**
  * Routine de comptage des ticks codeur incrément/décrément
@@ -231,12 +247,54 @@ void handlePID() {
   }
 }
 
+/*
+* Initialise les ToF, en associant à chacun une adresse I2C unique.
+*/
+void initToF() {
+  // Réinitialisons nos TOF
+  Wire.beginTransmission(MULTIPLEXER_I2C_ADDRESS);
+  Wire.write(0b00000000);                         
+  Wire.endTransmission();
+  delay(10);
+
+  // Adressons nos TOF
+  for (int i = 0; i < TOF_COUNT; i++) {
+    // Acctivons le i-eme ToF
+    Wire.beginTransmission(MULTIPLEXER_I2C_ADDRESS);
+    Wire.write(1 << i);                         
+    Wire.endTransmission();
+    delay(10);
+
+    // Initialisation du ToF
+    tof_sensors[i].setTimeout(500);
+    if (!tof_sensors[i].init())
+    {
+      Serial.print("Failed to detect and initialize sensor ");
+      Serial.println(i);
+      while (1);
+    }
+
+    tof_sensors[i].setAddress(TOF_GET_I2C_ADDRESS(i));
+    tof_sensors[i].startContinuous(50);
+  }
+
+  // La configuration de nos ToF est terminée, on peut tout allumer !
+  Wire.beginTransmission(MULTIPLEXER_I2C_ADDRESS);
+  Wire.write(0b11111111);                         
+  Wire.endTransmission();
+  delay(10);
+}
+
 /**
  * Préparation des E/S et démarrage du PID
  */
 void setup() {
   Serial.begin(115200);
   delay(10);
+
+  // Setup I2C
+  Wire.begin();
+  Wire.setClock(100000); // 100kHz i2c - le PCF8574 ne supporte pas plus
   
   pinMode(PIN_ODO_CODEUR_A, INPUT);
   pinMode(PIN_ODO_CODEUR_B, INPUT);
@@ -248,6 +306,16 @@ void setup() {
 
   ascenseurPID.setOutputLimits((double) -PID_MAX_MOTOR_POWER, (double) PID_MAX_MOTOR_POWER);
   ascenseurPID.begin(&pidAltitudeCourante, &pidCommandeMoteur, &pidAltitudeCible, pidP, pidI, pidD);
+
+  // Vérifions que notre PCF 8574 est bien présent
+  Wire.beginTransmission(MULTIPLEXER_I2C_ADDRESS);
+  if(Wire.endTransmission() != 0) {
+    Serial.print(F("Le PCF8574 ne répond pas à l'adresse 0x"));
+    Serial.println(MULTIPLEXER_I2C_ADDRESS, HEX);
+    return;
+  }
+
+  initToF();
 }
 
 /**

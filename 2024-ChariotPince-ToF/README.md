@@ -1,5 +1,6 @@
-# Ascenseur Sonde
-Contient le sketch Arduino permettant de piloter l'ascenseur de la pince à gâteaux du robot principal.
+# 2024 - Pince sur courroie + ToF
+Contient le sketch Arduino permettant de piloter la pince sur courroie du robot principal. Il permet également 
+d'intéragir avec un array de capteurs Time Of Flight afin de détecter la position d'un objet cible devant le robot.
 Communication au travers d'une liaison série :
 
 ## Utilisation
