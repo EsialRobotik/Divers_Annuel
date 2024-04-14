@@ -22,7 +22,7 @@
 
 // Constantes de l'odométrie
 #define ODO_TICKS_PAR_MILLIMETRE 30         // Nombre de ticks de codeur par millimètre parcourus
-#define ODO_TICKS_OFFSET 15000               // Marge pour éviter les under/overflow en butées
+#define ODO_TICKS_OFFSET 15000              // Marge pour éviter les under/overflow en butées
 #define ODO_SEUIL_TICKS_DEPLACEMENT_NUL 5   // Seuil de variation du nombre de ticks en dessous duquel on considère l'ascenseur immobile 
 #define ODO_MARGE_COMMANDE 2                // Marge en dessous de laquelle on considère la consigne atteinte pour éviter les osciallations, plus la marge est élevée plus l'erreur de position est grande
 #define ODO_ZERO_TIMEOUT_MS 6000            // Durée max en ms du zéro de l'ascenseur au delà de laquelle on considère la manoeuvre en échec
@@ -45,6 +45,9 @@
 #define USER_CMD_ASCENSEUR_READ_POSITION 'a'     // altitude      renvoie la position de l'ascenseur sur la liaison série
 #define USER_CMD_ASCENSEUR_READ_MAX_POSITION 'A' // altitude max  renvoie la hauteur max de l'ascenseur. Renvoie -1 si pas sondée.
 #define USER_CMD_ASCENSEUR_EMERGENCY_STOP 'h'    // halt          arrêt d'urgence de l'ascenseur : désactive la puissance dans le moteurs jusqu'au prochain 'z' ou 'g'
+#define USER_CMD_TOF_READ_DISTANCE 'd'           // distance      renvoie la distance en mm de l'obstacle détecté par un des ToF en particulier
+#define USER_CMD_TOF_READ_DISTANCES 'D'          // Distances     renvoie les distances observées par les différents ToF (colon-separated)       
+#define USER_CMD_TOF_READ_FIRST_OBSTACLE 'f'     // first obstacle renvoie la distance en mm du premier obstacle détecté par les ToF (la distance minimum détectée par les ToF)
 
 // Constantes des ToF
 // Note: Cette adresse doit être différente de 0x29 qui est la valeur de démarrage
@@ -190,6 +193,44 @@ void handleEmergencyStop() {
     commanderAscenseur(0.);
 }
 
+void handleToFDistance(int sensor) {
+  int distance = 0; //mm
+  if (sensor < 0 || sensor >= TOF_COUNT) {
+    Serial.println("err: invalid TOF sensor");
+    return;
+  }
+  distance = tof_sensors[sensor].read();
+  Serial.println(distance);
+}
+
+void handleToFDistances() {
+  char buf[(6 * TOF_COUNT) + 1] = {0};
+  int len = 0;
+
+  for (int i = 0; i < TOF_COUNT; i++) {
+    int tmp = tof_sensors[i].read();
+    len += sprintf(buf+len, "%d:", tmp);
+  }
+  if (len > 0) { len -= 1; }
+  buf[len] = '\n';
+
+  Serial.print(buf);
+}
+
+
+void handleToFFirstObstacle() {
+  int distance = -1; //mm
+  
+  for (int i = 0; i < TOF_COUNT; i++) {
+    int tmp = tof_sensors[i].read();
+    if (tmp < distance || distance < 0) {
+      distance = tmp;
+    }
+  }
+
+  Serial.println(distance);
+}
+
 /**
  * Gère les commandes de l'utilisateur
  */
@@ -214,6 +255,15 @@ void handleUserCommands() {
         break;
       case USER_CMD_ASCENSEUR_READ_MAX_POSITION:
         Serial.println(hauteurMaxMm);
+        break;
+      case USER_CMD_TOF_READ_DISTANCE:
+        handleToFDistance(Serial.parseInt());
+        break;
+      case USER_CMD_TOF_READ_DISTANCES:
+        handleToFDistances();
+        break;
+      case USER_CMD_TOF_READ_FIRST_OBSTACLE:
+        handleToFFirstObstacle();
         break;
       case USER_CMD_ASCENSEUR_EMERGENCY_STOP:
         handleEmergencyStop();
