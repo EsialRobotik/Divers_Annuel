@@ -19,9 +19,9 @@
 // Constantes du PID 
 #define PID_MAX_MOTOR_POWER_ZERO 180  // Puissance max du moteur lors de la phase de zéro, ne pas mettre trop de jus car cherche volontairement à se caler contre la butée inférieure
 #define PID_MAX_MOTOR_POWER 255       // Puissance max du moteur lors d'une commande de position
-#define PID_P 10
-#define PID_I 0.0
-#define PID_D 0.10
+#define PID_P 10.0
+#define PID_I 0.009
+#define PID_D 1.0
 
 // Gestion de la vitesse en approche de limites
 #define ARRIVAL_BOTTOM_POWER_RATIO 0.7   // Ratio appliqué à la puissance du moteur en approche butée inférieur
@@ -114,6 +114,17 @@ class Cart {
          */
         bool isMoving();
 
+        double getPidP();
+
+        double getPidI();
+
+        double getPidD();
+
+        void setPidP(double p);
+
+        void setPidI(double i);
+
+        void setPidD(double d);
     protected:
         // Variables de l'odométrie
         unsigned int odoTicks = ODO_TICKS_OFFSET;       // Compteur de distance du chariot en unité odométrique

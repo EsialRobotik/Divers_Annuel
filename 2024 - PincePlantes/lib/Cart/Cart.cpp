@@ -153,3 +153,30 @@ bool Cart::isMoving() {
 }
 
 Cart* Cart::mainInstance = NULL;
+
+double Cart::getPidP() {
+  return pidP;
+}
+
+double Cart::getPidI() {
+  return pidI;
+}
+
+double Cart::getPidD() {
+  return pidD;
+}
+
+void Cart::setPidP(double p) {
+  pidP = p;
+  chariotPID.setCoefficients(pidP, pidI, pidD);
+}
+
+void Cart::setPidI(double i) {
+  pidI = i;
+  chariotPID.setCoefficients(pidP, pidI, pidD);
+}
+
+void Cart::setPidD(double d) {
+  pidD = d;
+  chariotPID.setCoefficients(pidP, pidI, pidD);
+}

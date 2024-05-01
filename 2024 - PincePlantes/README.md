@@ -14,6 +14,9 @@ Envoyer en une fois "\<commande>\<argument>\n" :
 | h | *aucun* | Arrêt d'urgence du chariot : désactive la puissance dans le moteurs jusqu'au prochain 'z' ou 'g' |
 | l | *aucun* | Lit la ligne de ToF et renvoie toutes les distances sur la liaison série |
 | f | *aucun* | Cherche une plante et place le chariot devant elle. Ne déplace pas le chariot et renvoie 'ko' si aucune plante trouvée ou 'ok' une fois le chariot placé (il peut donc y avoir un délais de quelques secondes avant un 'ok') |
+| p | double | Sans argument : renvoie la valeur du coefficient P du PID.<br>Avec argument : définit la valeur de ce coefficient. Le séparateur décimal est le point '.'. |
+| i | double | Sans argument : renvoie la valeur du coefficient I du PID.<br>Avec argument : définit la valeur de ce coefficient. Le séparateur décimal est le point '.'. |
+| d | double | Sans argument : renvoie la valeur du coefficient D du PID.<br>Avec argument : définit la valeur de ce coefficient. Le séparateur décimal est le point '.'. |
 
 ## Bugs connus
 1. Lors d'un reset de du chariot, un bug empêche d'accéder à la valeur "à jour" de la valeur des ticks de l'odométrie. Une solution de contournement consiste à écrire des espaces sur la liaison série avec Serial.print(" ") juste avant l'accès à la variable. Cela oblige à ignorer les espaces renvoyés par cette commande du côté du programme qui interagit avec le chariot.
