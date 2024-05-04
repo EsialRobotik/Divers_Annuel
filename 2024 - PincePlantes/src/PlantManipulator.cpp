@@ -11,6 +11,10 @@ PlantManipulator::PlantManipulator(Stream* serial, Cart* cart, short tofArrayCou
 }
 
 bool PlantManipulator::faceNextPlantAsync() {
+    if (!cart->isHomeSet()) {
+        serial->println("home not set");
+        return false;
+    }
     int tofIndex = 0;
     for(int i=0; i<tofArrayCount; i++) {
         for (int j=0; j<TOF_MAX_COUNT; j++) {
@@ -26,12 +30,6 @@ bool PlantManipulator::faceNextPlantAsync() {
         }
     }
     return false;
-}
-
-/**
- * @brief écrit sur la liaison série la valeur de toutes les mesures lues par @see triggerMeasure()
- */
-void writeMeasuresOnSerial(TimeOfFlightArray *tof) {
 }
 
 void PlantManipulator::acquireAndPrintLine() {
@@ -63,11 +61,4 @@ void PlantManipulator::acquireAndPrintLine() {
         }
     }
     Serial.println();
-}
-
-void PlantManipulator::heartBeat() {
-    if (movingToPlant && !cart->isMoving()) {
-        movingToPlant = false;
-        serial->println("ok");
-    }
 }
