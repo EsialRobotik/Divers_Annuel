@@ -13,7 +13,7 @@ Envoyer en une fois "\<commande>\<argument>\n" :
 | A | *aucun* | Renvoie la distance  max que le chariot peut parcourir si elle a été déteminée par la commande Z, sinon -1 |
 | h | *aucun* | Arrêt d'urgence du chariot : désactive la puissance dans le moteurs jusqu'au prochain 'z' ou 'g' |
 | l | *aucun* | Lit la ligne de ToF et renvoie toutes les distances sur la liaison série |
-| f | *aucun* | Cherche une plante et place le chariot devant elle. Ne déplace pas le chariot et renvoie 'ko' si aucune plante trouvée ou 'ok' une fois le chariot placé (il peut donc y avoir un délais de quelques secondes avant un 'ok') |
+| f | *aucun* | Cherche la plante la plus proche et place le chariot devant elle. Ne déplace pas le chariot et renvoie 'ko' si aucune plante trouvée ou 'ok' une fois le chariot placé (il peut donc y avoir un délais de quelques secondes avant un 'ok') |
 | p | double | Sans argument : renvoie la valeur du coefficient P du PID.<br>Avec argument : définit la valeur de ce coefficient. Le séparateur décimal est le point '.'. |
 | i | double | Sans argument : renvoie la valeur du coefficient I du PID.<br>Avec argument : définit la valeur de ce coefficient. Le séparateur décimal est le point '.'. |
 | d | double | Sans argument : renvoie la valeur du coefficient D du PID.<br>Avec argument : définit la valeur de ce coefficient. Le séparateur décimal est le point '.'. |

@@ -99,7 +99,7 @@ void handleUserCommands() {
         plantManipulator.acquireAndPrintLine();
         break;
       case USER_CMD_FACE_FIRST_VEGETABLE:
-        Serial.println(plantManipulator.faceNextPlantAsync() ? "running..." : "ko");
+        Serial.println(plantManipulator.faceNextClosestPlantAsync() ? "running..." : "ko");
         break;
       case USER_COM_CHARIOT_PID_P:
         if (Serial.available() > 0 && Serial.peek() != '\n' && Serial.peek() != '\r') {

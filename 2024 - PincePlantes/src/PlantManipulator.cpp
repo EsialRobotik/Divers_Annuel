@@ -6,30 +6,38 @@ PlantManipulator::PlantManipulator(Stream* serial, Cart* cart, short tofArrayCou
     , tofArrayCount(tofArrayCount)
     , tofArrays(tofArrays)
     , distanceByToF(distanceByToF)
-    , movingToPlant(false)
 {;
 }
 
-bool PlantManipulator::faceNextPlantAsync() {
+bool PlantManipulator::faceNextClosestPlantAsync() {
     if (!cart->isHomeSet()) {
         serial->println("home not set");
         return false;
     }
     int tofIndex = 0;
+    int targetPosition = -1;
+    uint16_t smallestDistance = 10000;
     for(int i=0; i<tofArrayCount; i++) {
         for (int j=0; j<TOF_MAX_COUNT; j++) {
             if (tofArrays[i]->tofExists(j)) {
                 uint16_t distance = tofArrays[i]->getDistance(j);
-                if (distance >= PLANTPANIULATOR_MIN_DISTANCE_MM && distance <= PLANTPANIULATOR_MAX_DISTANCE_MM) {
-                    cart->setPosition(distanceByToF[tofIndex]);
-                    movingToPlant = true;
-                    return true;
+                if (
+                    distance >= PLANTPANIULATOR_MIN_DISTANCE_MM &&
+                    distance <= PLANTPANIULATOR_MAX_DISTANCE_MM &&
+                    distance < smallestDistance
+                ) {
+                    smallestDistance = distance;
+                    targetPosition = distanceByToF[tofIndex];
                 }
             }
             tofIndex++;
         }
     }
-    return false;
+
+    if (targetPosition != -1) {
+        cart->setPosition(targetPosition);
+    }
+    return targetPosition != -1;
 }
 
 void PlantManipulator::acquireAndPrintLine() {

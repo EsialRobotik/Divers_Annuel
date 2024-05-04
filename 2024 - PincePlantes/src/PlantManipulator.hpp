@@ -28,13 +28,12 @@ class PlantManipulator {
 
         /**
          * @brief Effectue une détection des plantes se trouvant devant la pince.
-         * Tente ensuite de positionner le chariot en face de la première plante toruvée de manière non bloquantes.
-         * Si une plante a été détectée, le chariot est envoyé à la position et "ok" est renvoyé sur la liaison série lorsqu'il s'immobilise
+         * Tente ensuite de positionner le chariot en face de la plante la plus proche trouvée, de manière non bloquantes : un ordre de placment est envoyé au chariot.
          * 
          * @return true Si une plante est trouvé
          * @return false Si aucune plante n'est trouvée
          */
-        bool faceNextPlantAsync();
+        bool faceNextClosestPlantAsync();
 
         /**
          * @brief Effetcue une acquisition sur tous les ToF disponibles et écrit le résultat sur la liaison série
@@ -48,7 +47,6 @@ class PlantManipulator {
         short tofArrayCount;
         TimeOfFlightArray** tofArrays;
         int* distanceByToF;
-        bool movingToPlant;
 };
 
 #endif
