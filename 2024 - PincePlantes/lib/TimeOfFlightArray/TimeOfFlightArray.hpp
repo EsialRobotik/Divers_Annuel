@@ -55,7 +55,7 @@ class TimeOfFlightArray {
         bool checkIfPcf8574IsPresent();
 
         /**
-         * @brief récupère la distance détectée par le Time Of Flight #id
+         * @brief récupère la denrière distance bufferisée par triggerMeasuresNonBlocking() du Time Of Flight #id
          * Une valeur de 0xFFFF indique un problème de mesure : le ToF n'est pas joignable ou une erreur de mesure est arrivée 
          * 
          * @param id 
@@ -63,6 +63,13 @@ class TimeOfFlightArray {
          */
         uint16_t getDistance(unsigned short id);
 
+        /**
+         * @brief récupère la mesure d'un Time Of Flight #id en assumant qu'une lecture en continue activée par triggerMeasuresNonBlocking();
+         * Une valeur de 0xFFFF indique un problème de mesure : le ToF n'est pas joignable ou une erreur de mesure est arrivée 
+         * @param id
+         * @return uint16_t
+         */
+        uint16_t readTriggeredMeasure(unsigned short id);
         /**
          * @brief Déclenche une mesure bloquante de tous les ToF présents
          * Bloque jusqu'à ce que tous les ToF aient répondu
@@ -81,6 +88,13 @@ class TimeOfFlightArray {
          * @param period_ms 
          */
         void startContinuous(uint32_t period_ms);
+
+        /**
+         * @brief récupère la période d'échantillonage paramétrée
+         * 
+         * @return uint32_t 
+         */
+        uint32_t getCurrentSamplePeriod();
 
     private:
         /**
@@ -118,6 +132,12 @@ class TimeOfFlightArray {
          * 
          */
         unsigned char firstTimeOfFlightAddress;
+
+        /**
+         * @brief Période d'échantillonage définie par startContinuous() 
+         * 
+         */
+        uint32_t samplePeriod;
 
         /**
          * @brief Allume ou éteint tous les slots timeofflight

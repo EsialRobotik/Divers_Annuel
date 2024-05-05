@@ -7,7 +7,7 @@
 
 // Distances min et max entre lesquelles on considère qu'une plante est présente devant un ToF et est atteignable
 #define PLANTPANIULATOR_MIN_DISTANCE_MM 100
-#define PLANTPANIULATOR_MAX_DISTANCE_MM 155
+#define PLANTPANIULATOR_MAX_DISTANCE_MM 200
 
 /**
  * @brief Détection et manipulation des plantes
@@ -40,6 +40,14 @@ class PlantManipulator {
          * 
          */
         void acquireAndPrintLine();
+
+        /**
+         * @brief Lit tous les ToF et renvoie la plus petite distance détectée
+         * 
+         * @param sampleCount Le nombre d'échantillons à réaliser par TOF. La valeur renvoyée sera la plus petite de toutes les ditances moyennées par ToF
+         * @return int 
+         */
+        int getClosestObjectDistance(unsigned int sampleCount);
 
     private:
         Stream* serial;

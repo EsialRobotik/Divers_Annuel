@@ -3,6 +3,7 @@
 TimeOfFlightArray::TimeOfFlightArray(unsigned char pcf8574Address, unsigned char firstTimeOfFlightAddress)
 : pcf8574Address(pcf8574Address)
 , firstTimeOfFlightAddress(firstTimeOfFlightAddress)
+, samplePeriod(0)
 {
     pcf8574IsPresent = false;
     for (unsigned short i = 0; i < TOF_MAX_COUNT; i++) {
@@ -91,6 +92,13 @@ void TimeOfFlightArray::triggerMeasuresNonBlocking() {
     }
 }
 
+uint16_t TimeOfFlightArray::readTriggeredMeasure(unsigned short id) {
+    if (id >= TOF_MAX_COUNT) {
+        return 0xFFFF;
+    }
+    return tofs[id]->read(true);
+}
+
 void TimeOfFlightArray::triggerMeasuresBlocking() {
     for (int i=0; i<TOF_MAX_COUNT; i++) {
         if (tofs[i] == NULL) {
@@ -102,6 +110,7 @@ void TimeOfFlightArray::triggerMeasuresBlocking() {
 }
 
 void TimeOfFlightArray::startContinuous(uint32_t period_ms) {
+    samplePeriod = period_ms;
     for (int i=0; i<TOF_MAX_COUNT; i++) {
         if (tofs[i] != NULL) {
             tofs[i]->startContinuous(period_ms);
@@ -117,4 +126,8 @@ unsigned short TimeOfFlightArray::getConnectedTofCount() {
         }
     }
     return count;
+}
+
+uint32_t TimeOfFlightArray::getCurrentSamplePeriod() {
+    return samplePeriod;
 }

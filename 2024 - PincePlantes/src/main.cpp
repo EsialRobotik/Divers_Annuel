@@ -26,6 +26,7 @@
 #define USER_COM_CHARIOT_PID_P 'p'             // PID P         Lit ou écrit le coefficient P du PID du chariot. Envoyer juste 'p' pour lire, sinon p0.5par exemple
 #define USER_COM_CHARIOT_PID_I 'i'             // PID I         Lit ou écrit le coefficient I du PID du chariot. Envoyer juste 'i' pour lire, sinon i0.5par exemple
 #define USER_COM_CHARIOT_PID_D 'd'             // PID D         Lit ou écrit le coefficient D du PID du chariot. Envoyer juste 'd' pour lire, sinon d0.5par exemple
+#define USER_COM_CLOSEST_OBJECT_DISTANCE 'c'   // closest       Renvoie la distance de l'objet détecté le plus proche
 
 #define USER_CMD_TOF_ACQUIRE_LINE 'l'         // line           Effectue une lecture de la ligne de Time Of Flight
 
@@ -104,23 +105,27 @@ void handleUserCommands() {
       case USER_COM_CHARIOT_PID_P:
         if (Serial.available() > 0 && Serial.peek() != '\n' && Serial.peek() != '\r') {
           chariot.setPidP((double) Serial.parseFloat());
-          Serial.print("ok ");
+          Serial.println("ok");
         }
         Serial.println(chariot.getPidP(), 4);
         break;
       case USER_COM_CHARIOT_PID_I:
         if (Serial.available() > 0 && Serial.peek() != '\n' && Serial.peek() != '\r') {
           chariot.setPidI((double) Serial.parseFloat());
-          Serial.print("ok ");
+          Serial.println("ok");
         }
         Serial.println(chariot.getPidI(), 4);
         break;
       case USER_COM_CHARIOT_PID_D:
         if (Serial.available() > 0 && Serial.peek() != '\n' && Serial.peek() != '\r') {
           chariot.setPidD((double) Serial.parseFloat());
-          Serial.print("ok ");
+          Serial.println("ok");
         }
         Serial.println(chariot.getPidD(), 4);
+        break;
+      case USER_COM_CLOSEST_OBJECT_DISTANCE:
+        Serial.print(plantManipulator.getClosestObjectDistance(3));
+        Serial.println(" ok");
         break;
     }
   }
@@ -132,8 +137,8 @@ void setup() {
   chariot.init();
   tofArray1.init();
   tofArray2.init();
-  tofArray1.startContinuous(20);
-  tofArray2.startContinuous(20);
+  tofArray1.startContinuous(40);
+  tofArray2.startContinuous(40);
 }
 
 void loop() {
