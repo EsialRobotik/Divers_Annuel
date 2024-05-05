@@ -6,8 +6,8 @@
 #include <Cart.hpp>
 
 // Distances min et max entre lesquelles on considère qu'une plante est présente devant un ToF et est atteignable
-#define PLANTPANIULATOR_MIN_DISTANCE_MM 70
-#define PLANTPANIULATOR_MAX_DISTANCE_MM 230
+#define PLANTPANIULATOR_MIN_DISTANCE_MM 100
+#define PLANTPANIULATOR_MAX_DISTANCE_MM 155
 
 /**
  * @brief Détection et manipulation des plantes
