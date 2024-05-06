@@ -80,7 +80,7 @@ VL53L1X* TimeOfFlightArray::instanciateTofIfPresentInSlot(int slot) {
     }
     tof->setAddress(firstTimeOfFlightAddress + slot + 1);
     tof->setDistanceMode(VL53L1X::DistanceMode::Short);
-    //tof->setMeasurementTimingBudget(20 * 1000);
+    tof->setMeasurementTimingBudget(40 * 1000);
     return tof;
 }
 
