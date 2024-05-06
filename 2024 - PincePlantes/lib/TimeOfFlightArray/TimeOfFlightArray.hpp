@@ -3,7 +3,6 @@
 
 #include <Wire.h>
 #include <VL53L1X.h>
-#include <string.h>
 
 #define TOF_DEFAULT_ADDRESS 0x29
 #define TOF_MAX_COUNT 8
@@ -63,8 +62,6 @@ class TimeOfFlightArray {
          * @return uint16_t 
          */
         uint16_t getDistance(unsigned short id);
-
-        String getRangingData(unsigned short id);
 
         /**
          * @brief récupère la mesure d'un Time Of Flight #id en assumant qu'une lecture en continue activée par triggerMeasuresNonBlocking();
