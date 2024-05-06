@@ -84,17 +84,17 @@ void PlantManipulator::acquireAndPrintLine() {
                 Serial.print("-      ");
             } else {
                 Serial.print(d);
-            if (d < 10) {
-                Serial.print("     ");
-            } else if (d < 100) {
-                Serial.print("    ");
-            } else if (d < 1000) {
-                Serial.print("   ");
-            } else if (d < 10000) {
-                Serial.print("  ");
-            } else if (d < 100000) {
-                Serial.print(" ");
-            }
+                if (d < 10) {
+                    Serial.print("     ");
+                } else if (d < 100) {
+                    Serial.print("    ");
+                } else if (d < 1000) {
+                    Serial.print("   ");
+                } else if (d < 10000) {
+                    Serial.print("  ");
+                } else if (d < 100000) {
+                    Serial.print(" ");
+                }
             }
         }
     }
