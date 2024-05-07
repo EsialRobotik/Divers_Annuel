@@ -137,8 +137,8 @@ void setup() {
   chariot.init();
   tofArray1.init();
   tofArray2.init();
-  tofArray1.startContinuous(41);
-  tofArray2.startContinuous(41);
+  tofArray1.startContinuous(61);
+  tofArray2.startContinuous(61);
 }
 
 void loop() {
