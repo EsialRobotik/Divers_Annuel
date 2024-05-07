@@ -49,12 +49,27 @@ class PlantManipulator {
          */
         int getClosestObjectDistance(unsigned int sampleCount);
 
+        /**
+         * @brief Lit le ToF qui avait détecté l'objet le plus proche par getClosestObjectDistance() et renvoie la distance
+         * Provoque un appel à getClosestObjectDistance() s'il n'a pas été appelé au moins une fois
+         * 
+         * @param sampleCount Nombre d'échantillons à réaliser par ToF.
+         * @return int 
+         */
+        int getLastClosestObjectDistance(unsigned int sampleCount);
+
     private:
         Stream* serial;
         Cart* cart;
         short tofArrayCount;
         TimeOfFlightArray** tofArrays;
         int* distanceByToF;
+
+        /**
+         * @brief Index du ToF qui a détecté l'objet le plus proche lors du dernier getClosestObjectDistance()
+         * 
+         */
+        int lastClosestObjectTofIndexInArray;
 };
 
 #endif

@@ -27,6 +27,7 @@
 #define USER_COM_CHARIOT_PID_I 'i'             // PID I         Lit ou écrit le coefficient I du PID du chariot. Envoyer juste 'i' pour lire, sinon i0.5par exemple
 #define USER_COM_CHARIOT_PID_D 'd'             // PID D         Lit ou écrit le coefficient D du PID du chariot. Envoyer juste 'd' pour lire, sinon d0.5par exemple
 #define USER_COM_CLOSEST_OBJECT_DISTANCE 'c'   // closest       Renvoie la distance de l'objet détecté le plus proche
+#define USER_COM_LAST_CLOSEST_OBJECT_DISTANCE 'C' // last closest  Renvoie la distance du dernier objet qui était le plus proche
 
 #define USER_CMD_TOF_ACQUIRE_LINE 'l'         // line           Effectue une lecture de la ligne de Time Of Flight
 
@@ -125,6 +126,10 @@ void handleUserCommands() {
         break;
       case USER_COM_CLOSEST_OBJECT_DISTANCE:
         Serial.print(plantManipulator.getClosestObjectDistance(3));
+        Serial.println(" ok");
+        break;
+      case USER_COM_LAST_CLOSEST_OBJECT_DISTANCE:
+        Serial.print(plantManipulator.getLastClosestObjectDistance(3));
         Serial.println(" ok");
         break;
     }

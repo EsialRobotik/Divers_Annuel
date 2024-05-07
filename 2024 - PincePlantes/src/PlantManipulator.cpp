@@ -6,6 +6,7 @@ PlantManipulator::PlantManipulator(Stream* serial, Cart* cart, short tofArrayCou
     , tofArrayCount(tofArrayCount)
     , tofArrays(tofArrays)
     , distanceByToF(distanceByToF)
+    , lastClosestObjectTofIndexInArray(-1)
 {;
 }
 
@@ -64,10 +65,33 @@ int PlantManipulator::getClosestObjectDistance(unsigned int sampleCount) {
         uint16_t mean = accumulator[m] / sampleCount;
         if (mean < smallestDistance) {
             smallestDistance = mean;
+            lastClosestObjectTofIndexInArray = m;
         }
     }
 
     return smallestDistance;
+
+}
+
+int PlantManipulator::getLastClosestObjectDistance(unsigned int sampleCount) {
+    if (lastClosestObjectTofIndexInArray == -1) {
+        return getClosestObjectDistance(sampleCount);
+    }
+
+    int tofArrayIndex = lastClosestObjectTofIndexInArray / TOF_MAX_COUNT;
+    int tofIndex = lastClosestObjectTofIndexInArray % TOF_MAX_COUNT;
+
+    uint16_t accumulator = 0;
+    if (tofArrays[tofArrayIndex]->tofExists(tofIndex)) {
+        for (unsigned int k=0; k<sampleCount; k++) {
+            accumulator += tofArrays[tofArrayIndex]->readTriggeredMeasure(tofIndex);
+        }
+        accumulator /= sampleCount;
+    } else {
+        accumulator = 10000;
+    }
+
+    return accumulator;
 }
 
 void PlantManipulator::acquireAndPrintLine() {
