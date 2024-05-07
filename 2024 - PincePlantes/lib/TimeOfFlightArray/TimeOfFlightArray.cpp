@@ -133,16 +133,3 @@ unsigned short TimeOfFlightArray::getConnectedTofCount() {
 uint32_t TimeOfFlightArray::getCurrentSamplePeriod() {
     return samplePeriod;
 }
-
-String TimeOfFlightArray::getRangingData(unsigned short id) {
-    // Et si on pendais par les couilles les contributeurs CPP pour leur expliquer que cette syntaxe c'est de la merde ???
-    String fuuu = "";
-    fuuu += tofs[id]->ranging_data.range_mm;
-    fuuu += "#";
-    fuuu += tofs[id]->ranging_data.range_status;
-    fuuu += "#";
-    fuuu += tofs[id]->ranging_data.peak_signal_count_rate_MCPS;
-    fuuu += "#"; 
-    fuuu += tofs[id]->ranging_data.ambient_count_rate_MCPS;
-    return fuuu;
-}
