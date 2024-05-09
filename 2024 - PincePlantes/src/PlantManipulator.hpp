@@ -7,7 +7,7 @@
 
 // Distances min et max entre lesquelles on considère qu'une plante est présente devant un ToF et est atteignable
 #define PLANTPANIULATOR_MIN_DISTANCE_MM 100
-#define PLANTPANIULATOR_MAX_DISTANCE_MM 200
+#define PLANTPANIULATOR_MAX_DISTANCE_MM 350
 
 /**
  * @brief Détection et manipulation des plantes
