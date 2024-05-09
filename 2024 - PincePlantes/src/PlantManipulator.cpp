@@ -29,6 +29,7 @@ bool PlantManipulator::faceNextClosestPlantAsync() {
                 ) {
                     smallestDistance = distance;
                     targetPosition = distanceByToF[tofIndex];
+                    lastClosestObjectTofIndexInArray = tofIndex;
                 }
             }
             tofIndex++;
