@@ -1,7 +1,8 @@
 #include "Cart.hpp"
 
-Cart::Cart()
+Cart::Cart(unsigned long commandTimeout)
   : lastCommand(0.)
+  , commandTimeout(commandTimeout)
 {
   Cart::mainInstance = this;
 }
@@ -101,6 +102,7 @@ void Cart::setPosition(int position) {
   if (!pidEnabled) {
     pidEnabled = true;
   }
+  lastCommandStart = millis();
   pidAltitudeCible = (double) position;
   pidTargetReached = false;
 }
@@ -115,7 +117,7 @@ void Cart::handlePID() {
   if (pidEnabled) {
     pidAltitudeCourante = ((double) (odoTicks - ODO_TICKS_OFFSET)) / ((double) ODO_TICKS_PAR_MILLIMETRE);
     chariotPID.compute();
-    if (abs(pidAltitudeCourante - pidAltitudeCible) < ODO_MARGE_COMMANDE) {
+    if (abs(pidAltitudeCourante - pidAltitudeCible) < ODO_MARGE_COMMANDE || (lastCommandStart + commandTimeout) < millis()) {
       commander(0.);
       if (!pidTargetReached) {
         pidTargetReached = true;

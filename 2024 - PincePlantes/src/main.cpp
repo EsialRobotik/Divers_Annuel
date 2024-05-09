@@ -36,6 +36,8 @@
 #define PCF8574ADDRESS_1 0x3F
 #define PCF8574ADDRESS_2 0x3B
 
+#define CART_COMMAND_TIMEOUT 5000
+
 /**
  * @brief Mapping entre l'index d'un ToF et sa position physique en mm du point de vue du chariot
  * 
@@ -58,7 +60,7 @@ int mappingDistances[] = {
   0,  
 };
 
-Cart chariot;
+Cart chariot(CART_COMMAND_TIMEOUT);
 TimeOfFlightArray tofArray1 = TimeOfFlightArray(PCF8574ADDRESS_1);
 TimeOfFlightArray tofArray2 = TimeOfFlightArray(PCF8574ADDRESS_2, TOF_DEFAULT_ADDRESS + 0x08);
 

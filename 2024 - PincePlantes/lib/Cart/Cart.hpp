@@ -30,7 +30,10 @@
 
 class Cart {
     public:
-        Cart();
+        /**
+         * @param commandTimeout Temps donné à une consigne pour être atteinte, au delà on arrête d'essayer d'y aller 
+         */
+        Cart(unsigned long commandTimeout);
 
         /**
          * @brief Réalise l'initialisation du chariot : réglage des E/S et reset des compteurs
@@ -146,6 +149,8 @@ class Cart {
         bool pidEnabled = false;
         bool pidTargetReached = false;
         double lastCommand;
+        unsigned long commandTimeout;
+        unsigned long lastCommandStart;
 
         /**
          * @brief Instance principale de la classe qui va recevoir les interruptions
