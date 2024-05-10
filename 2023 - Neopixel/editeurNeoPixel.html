@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Editeur NeoPixel</title>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+        td {
+            width: 20px;
+            height: 20px;
+            border: 1px solid black;
+            user-select: none;
+        }
+        td[data-active="true"] {
+            background-color: red;
+        }
+        div.animation {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+        }
+        div.editingArea {
+            margin: 15px;
+        }
+    </style>
+</head>
+<body>
+<div id="divEditings"></div>
+<button onclick="addEditingArea(8, 8);">Ajouter</button>
+<div class="animation">
+    <table id="animation">
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    </table>
+</div>
+<script>
+    const libOut = document.getElementById('out');
+    const txtIn = document.getElementById('in');
+    const divEditings = document.getElementById('divEditings');
+    const animation = document.getElementById('animation');
+
+    const inputs = [];
+
+    function addEditingArea(lignes, colonnes, value) {
+        const div = document.createElement('div');
+        div.classList.add('editingArea');
+        const pre = document.createElement('pre');
+        const resultat = document.createElement('label');
+        const input = document.createElement('input');
+        const btnCopier = document.createElement('button');
+        const table = document.createElement('table');
+        const btnEffacer = document.createElement('button');
+        const btnDupliquer = document.createElement('button');
+
+        input.size = 60;
+
+        btnCopier.innerText = 'Copier';
+        btnCopier.onclick = () => {
+            input.select();
+            document.execCommand("copy");
+
+        }
+        btnEffacer.innerText = 'Effacer';
+        btnEffacer.onclick = () => {
+            input.value = '';
+            load(input, table);
+            out(table, input);
+        }
+        input.onkeyup = () => load(input, table);
+
+        btnDupliquer.innerText = 'Dupliquer';
+        btnDupliquer.onclick = () => {
+            addEditingArea(lignes, colonnes, input.value);
+        }
+
+        for (let i=0; i<lignes; i++) {
+            const tr = document.createElement('tr');
+            for (let j=0; j<colonnes; j++) {
+                const td = document.createElement('td');
+                td.onclick = () => {
+                    if (!td.dataset['active'] || td.dataset['active'] === 'false') {
+                        td.dataset['active'] = 'true';
+                    } else {
+                        td.dataset['active'] = 'false';
+                    }
+                    out(table, input);
+                };
+                td.onmouseenter = (event) => {
+                    if (event.buttons === 1) {
+                        td.dataset['active'] = 'true';
+                    } else if (event.buttons === 2) {
+                        td.dataset['active'] = 'false';
+                    }
+                    out(table, input);
+                };
+                tr.appendChild(td);
+            }
+            table.appendChild(tr);
+        }
+
+        div.appendChild(table);
+        div.appendChild(pre);
+        div.appendChild(resultat);
+        div.appendChild(input);
+        div.appendChild(btnCopier);
+        div.appendChild(btnDupliquer);
+        div.appendChild(btnEffacer);
+        divEditings.appendChild(div);
+
+        if (value) {
+            input.value = value;
+            load(input, table);
+        }
+
+        inputs.push(input);
+    }
+    function out(table, destination) {
+        let code = '{';
+        Array.from(table.getElementsByTagName('tr')).forEach(tr => {
+            if (code !== '{') {
+                code += ', ';
+            }
+            code += 'B';
+            Array.from(tr.getElementsByTagName('td')).forEach(td => {
+                code += td.dataset['active'] === 'true' ? '1' : '0';
+            })
+        })
+        code += '}';
+        destination.value = code;
+    }
+
+    function load(input, table) {
+        const tds = Array.from(table.getElementsByTagName('td'));
+        tds.forEach((td) => td.dataset['active'] = 'false');
+        let index = 0;
+        input.value.replace(/[}{ ;B,]/g, '').split('').forEach(c => {
+            if (index < tds.length) {
+                tds[index].dataset['active'] = c === '1' ? 'true' : 'false';
+            }
+            index++;
+        })
+    }
+
+    addEditingArea(8, 8);
+
+    let counter = 0;
+    setInterval(() => {
+        load(inputs[counter], animation);
+        counter++;
+        if (counter >= inputs.length) {
+            counter = 0;
+        }
+    }, 500);
+</script>
+</body>
+</html>
